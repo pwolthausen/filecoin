@@ -1,0 +1,38 @@
+# /etc/systemd/system/lotus-miner.service
+[Unit]
+Description=Lotus Miner Service
+After=network.target
+After=lotus.service
+Wants=lotus.service
+
+[Service]
+User=filecoin 
+ExecStart=/usr/local/bin/lotus-miner run
+ExecStop=/usr/local/bin/lotus-miner stop
+Restart=always
+RestartSec=10
+LimitNOFILE=1048576:1048576
+
+Environment=LOTUS_PATH=/home/filecoin/.lotus
+Environment=LOTUS_MINER_PATH=/home/filecoin/.lotusminer
+Environment=LOTUS_BACKUP_BASE_PATH=/home/filecoin/miner-backups
+Environment=FIL_PROOFS_PARAMETER_CACHE=/home/filecoin/lotus/node/parameter
+Environment=FIL_PROOFS_PARENT_CACHE=/home/filecoin/lotus/node/parent
+Environment=TMPDIR=/opt/lotus/sealing
+Environment=FFI_USE_MULTICORE_SDR=1
+Environment=RUSTFLAGS="-C target-cpu=native -g"
+Environment=FFI_BUILD_FROM_SOURCE=1
+Environment=NVIDIA_VISIBLE_DEVICES=[]
+
+Environment=BELLMAN_CPU_UTILIZATION=0.875
+Environment=BELLMAN_CUSTOM_GPU="GeForce RTX 3060 Ti:4864"
+Environment=GOLOG_OUTPUT=file
+Environment=GOLOG_FILE=/var/log/lotus/miner.log
+Environment=RUST_LOG=info
+Environment=RUST_BACKTRACE=full
+StandardOutput=append:/var/log/lotus/miner_rust.log
+
+Environment=FULLNODE_API_INFO=<api token + endpoint>
+
+[Install]
+WantedBy=multi-user.target

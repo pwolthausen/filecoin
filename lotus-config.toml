@@ -1,0 +1,124 @@
+[API]
+ListenAddress = "/ip4/192.168.1.3/tcp/1234/http"
+  RemoteListenAddress = ""
+  Timeout = "30s"
+
+[Backup]
+  # Note that in case of metadata corruption it might be much harder to recover
+  # your node if metadata log is disabled
+  #
+  # type: bool
+  #DisableMetadataLog = false
+
+
+[Libp2p]
+  # Binding address for the libp2p host - 0 means random port.
+  # Format: multiaddress; see https://multiformats.io/multiaddr/
+  #
+  # type: []string
+  ListenAddresses = ["/ip4/0.0.0.0/tcp/15019", "/ip6/::/tcp/0"]
+
+  # Addresses to explicitally announce to other peers. If not specified,
+  # all interface addresses are announced
+  # Format: multiaddress
+  #
+  # type: []string
+  AnnounceAddresses = ["/ip4/72.212.184.126/tcp/15019"]
+
+  # Addresses to not announce
+  # Format: multiaddress
+  #
+  # type: []string
+  #NoAnnounceAddresses = []
+
+  # type: uint
+  #ConnMgrLow = 150
+
+  # type: uint
+  #ConnMgrHigh = 180
+
+  # type: Duration
+  #ConnMgrGrace = "20s"
+
+
+[Pubsub]
+  # Run the node in bootstrap-node mode
+  #
+  # type: bool
+  #Bootstrapper = false
+
+  # type: string
+  #RemoteTracer = ""
+
+
+[Client]
+  # type: bool
+  #UseIpfs = false
+
+  # type: bool
+  #IpfsOnlineMode = false
+
+  # type: string
+  #IpfsMAddr = ""
+
+  # type: bool
+  #IpfsUseForRetrieval = false
+
+  # The maximum number of simultaneous data transfers between the client
+  # and storage providers
+  #
+  # type: uint64
+  #SimultaneousTransfers = 20
+
+
+[Wallet]
+  # type: string
+  #RemoteBackend = ""
+
+  # type: bool
+  #EnableLedger = false
+
+  # type: bool
+  #DisableLocal = false
+
+
+[Fees]
+  # type: types.FIL
+  #DefaultMaxFee = "0.07 FIL"
+
+
+[Chainstore]
+  # type: bool
+  #EnableSplitstore = false
+
+  [Chainstore.Splitstore]
+    # ColdStoreType specifies the type of the coldstore.
+    # It can be "universal" (default) or "discard" for discarding cold blocks.
+    #
+    # type: string
+    #ColdStoreType = "universal"
+
+    # HotStoreType specifies the type of the hotstore.
+    # Only currently supported value is "badger".
+    #
+    # type: string
+    #HotStoreType = "badger"
+
+    # MarkSetType specifies the type of the markset.
+    # It can be "map" (default) for in memory marking or "badger" for on-disk marking.
+    #
+    # type: string
+    #MarkSetType = "map"
+
+    # HotStoreMessageRetention specifies the retention policy for messages, in finalities beyond
+    # the compaction boundary; default is 0.
+    #
+    # type: uint64
+    #HotStoreMessageRetention = 0
+
+    # HotStoreFullGCFrequency specifies how often to perform a full (moving) GC on the hotstore.
+    # A value of 0 disables, while a value 1 will do full GC in every compaction.
+    # Default is 20 (about once a week).
+    #
+    # type: uint64
+    #HotStoreFullGCFrequency = 20

@@ -1,0 +1,400 @@
+[API]
+ListenAddress = "/ip4/127.0.0.1/tcp/3456/http"
+  RemoteListenAddress = "127.0.0.1:2345"
+  Timeout = "30s"
+[Backup]
+  # Note that in case of metadata corruption it might be much harder to recover
+  # your node if metadata log is disabled
+  #
+  # type: bool
+  #DisableMetadataLog = false
+
+
+[Libp2p]
+  # Binding address for the libp2p host - 0 means random port.
+  # Format: multiaddress; see https://multiformats.io/multiaddr/
+  #
+  # type: []string
+  ListenAddresses = ["/ip4/0.0.0.0/tcp/15017", "/ip6/::/tcp/0"]
+
+  # Addresses to explicitally announce to other peers. If not specified,
+  # all interface addresses are announced
+  # Format: multiaddress
+  #
+  # type: []string
+  AnnounceAddresses = ["/ip4/72.212.184.126/tcp/15017"]
+
+  # Addresses to not announce
+  # Format: multiaddress
+  #
+  # type: []string
+  #NoAnnounceAddresses = []
+
+  # type: uint
+  #ConnMgrLow = 150
+
+  # type: uint
+  #ConnMgrHigh = 180
+
+  # type: Duration
+  #ConnMgrGrace = "20s"
+
+
+[Pubsub]
+  # Run the node in bootstrap-node mode
+  #
+  # type: bool
+  #Bootstrapper = false
+
+  # type: string
+  #RemoteTracer = ""
+
+
+[Subsystems]
+  # type: bool
+  #EnableMining = true
+
+  # type: bool
+  #EnableSealing = true
+
+  # type: bool
+  #EnableSectorStorage = true
+
+  # type: bool
+  #EnableMarkets = true
+
+  # type: string
+  #SealerApiInfo = ""
+
+  # type: string
+  #SectorIndexApiInfo = ""
+
+
+[Dealmaking]
+  # When enabled, the miner can accept online deals
+  #
+  # type: bool
+  #ConsiderOnlineStorageDeals = true
+
+  # When enabled, the miner can accept offline deals
+  #
+  # type: bool
+  #ConsiderOfflineStorageDeals = true
+
+  # When enabled, the miner can accept retrieval deals
+  #
+  # type: bool
+  #ConsiderOnlineRetrievalDeals = true
+
+  # When enabled, the miner can accept offline retrieval deals
+  #
+  # type: bool
+  #ConsiderOfflineRetrievalDeals = true
+
+  # When enabled, the miner can accept verified deals
+  #
+  # type: bool
+  #ConsiderVerifiedStorageDeals = true
+
+  # When enabled, the miner can accept unverified deals
+  #
+  # type: bool
+  #ConsiderUnverifiedStorageDeals = true
+
+  # A list of Data CIDs to reject when making deals
+  #
+  # type: []cid.Cid
+  #PieceCidBlocklist = []
+
+  # Maximum expected amount of time getting the deal into a sealed sector will take
+  # This includes the time the deal will need to get transferred and published
+  # before being assigned to a sector
+  #
+  # type: Duration
+  #ExpectedSealDuration = "24h0m0s"
+
+  # Maximum amount of time proposed deal StartEpoch can be in future
+  #
+  # type: Duration
+  #MaxDealStartDelay = "336h0m0s"
+
+  # When a deal is ready to publish, the amount of time to wait for more
+  # deals to be ready to publish before publishing them all as a batch
+  #
+  # type: Duration
+  #PublishMsgPeriod = "1h0m0s"
+
+  # The maximum number of deals to include in a single PublishStorageDeals
+  # message
+  #
+  # type: uint64
+  #MaxDealsPerPublishMsg = 8
+
+  # The maximum collateral that the provider will put up against a deal,
+  # as a multiplier of the minimum collateral bound
+  #
+  # type: uint64
+  #MaxProviderCollateralMultiplier = 2
+
+  # The maximum number of parallel online data transfers (storage+retrieval)
+  #
+  # type: uint64
+  #SimultaneousTransfers = 20
+
+  # A command used for fine-grained evaluation of storage deals
+  # see https://docs.filecoin.io/mine/lotus/miner-configuration/#using-filters-for-fine-grained-storage-and-retrieval-deal-acceptance for more details
+  #
+  # type: string
+  #Filter = ""
+
+  # A command used for fine-grained evaluation of retrieval deals
+  # see https://docs.filecoin.io/mine/lotus/miner-configuration/#using-filters-for-fine-grained-storage-and-retrieval-deal-acceptance for more details
+  #
+  # type: string
+  #RetrievalFilter = ""
+
+  [Dealmaking.RetrievalPricing]
+    #Strategy = "default"
+
+    [Dealmaking.RetrievalPricing.Default]
+      #VerifiedDealsFreeTransfer = true
+
+    [Dealmaking.RetrievalPricing.External]
+      #Path = ""
+
+
+[Sealing]
+  # Upper bound on how many sectors can be waiting for more deals to be packed in it before it begins sealing at any given time.
+  # If the miner is accepting multiple deals in parallel, up to MaxWaitDealsSectors of new sectors will be created.
+  # If more than MaxWaitDealsSectors deals are accepted in parallel, only MaxWaitDealsSectors deals will be processed in parallel
+  # Note that setting this number too high in relation to deal ingestion rate may result in poor sector packing efficiency
+  # 0 = no limit
+  #
+  # type: uint64
+  MaxWaitDealsSectors = 2
+
+  # Upper bound on how many sectors can be sealing at the same time when creating new CC sectors (0 = unlimited)
+  #
+  #type: uint64
+  MaxSealingSectors = 0
+
+  # Upper bound on how many sectors can be sealing at the same time when creating new sectors with deals (0 = unlimited)
+  #
+   #type: uint64
+  MaxSealingSectorsForDeals = 0
+
+  # CommittedCapacitySectorLifetime is the duration a Committed Capacity (CC) sector will
+  # live before it must be extended or converted into sector containing deals before it is
+  # terminated. Value must be between 180-540 days inclusive
+  #
+   #type: Duration
+#  CommittedCapacitySectorLifetime = "540"
+
+  # Period of time that a newly created sector will wait for more deals to be packed in to before it starts to seal.
+  # Sectors which are fully filled will start sealing immediately
+  #
+   #type: Duration
+  WaitDealsDelay = "1h0m0s"
+
+  # Whether to keep unsealed copies of deal data regardless of whether the client requested that. This lets the miner
+  # avoid the relatively high cost of unsealing the data later, at the cost of more storage space
+  #
+   #type: bool
+  AlwaysKeepUnsealedCopy = true
+
+  # Run sector finalization before submitting sector proof to the chain
+  #
+   #type: bool
+  FinalizeEarly = false
+
+  # Whether to use available miner balance for sector collateral instead of sending it with each message
+  #
+   #type: bool
+  CollateralFromMinerBalance = false
+
+  # Minimum available balance to keep in the miner actor before sending it with messages
+  #
+   #type: types.FIL
+  AvailableBalanceBuffer = "0 FIL"
+
+  # Don't send collateral with messages even if there is no available balance in the miner actor
+  #
+   #type: bool
+  DisableCollateralFallback = false
+
+  # enable / disable precommit batching (takes effect after nv13)
+  #
+   #type: bool
+  BatchPreCommits = true
+
+  # maximum precommit batch size - batches will be sent immediately above this size
+  #
+   #type: int
+  MaxPreCommitBatch = 256
+
+  # how long to wait before submitting a batch after crossing the minimum batch size
+  #
+   #type: Duration
+  PreCommitBatchWait = "0h0m0s"
+
+  # time buffer for forceful batch submission before sectors/deal in batch would start expiring
+  #
+   #type: Duration
+  PreCommitBatchSlack = "3h0m0s"
+
+  # enable / disable commit aggregation (takes effect after nv13)
+  #
+   #type: bool
+  AggregateCommits = true
+
+  # maximum batched commit size - batches will be sent immediately above this size
+  #
+   #type: int
+  MinCommitBatch = 4
+
+   #type: int
+  MaxCommitBatch = 819
+
+  # how long to wait before submitting a batch after crossing the minimum batch size
+  #
+   #type: Duration
+  CommitBatchWait = "0h0m0s"
+
+  # time buffer for forceful batch submission before sectors/deals in batch would start expiring
+  #
+   #type: Duration
+  CommitBatchSlack = "1h0m0s"
+
+  # network BaseFee below which to stop doing commit aggregation, instead
+  # submitting proofs to the chain individually
+  #
+   #type: types.FIL
+  AggregateAboveBaseFee = "0.00000000015 FIL"
+
+   #type: uint64
+  TerminateBatchMax = 100
+
+   #type: uint64
+  TerminateBatchMin = 1
+
+   #type: Duration
+  TerminateBatchWait = "5m0s"
+
+
+[Storage]
+  ParallelFetchLimit = 10
+
+  AllowAddPiece = false
+
+  AllowPreCommit1 = false
+
+  AllowPreCommit2 = false
+
+  AllowCommit = true
+
+  AllowUnseal = false
+
+  ResourceFiltering = "hardware"
+
+
+[Fees]
+# type: types.FIL
+  MaxPreCommitGasFee = "0.04 FIL"
+  # type: types.FIL
+  MaxCommitGasFee = "0.15 FIL"
+  # type: types.FIL
+  #MaxTerminateGasFee = "0.5 FIL"
+
+  # WindowPoSt is a high-value operation, so the default fee should be high.
+  #
+  # type: types.FIL
+  MaxWindowPoStGasFee = "9.3 FIL"
+  # type: types.FIL
+  MaxPublishDealsFee = "0.5 FIL"
+  # type: types.FIL
+  MaxMarketBalanceAddFee = "0.5 FIL"
+  [Fees.MaxPreCommitBatchGasFee]
+    # type: types.FIL
+    #Base = "0 FIL"
+
+    # type: types.FIL
+    #PerSector = "0.02 FIL"
+
+  [Fees.MaxCommitBatchGasFee]
+    # type: types.FIL
+    #Base = "0 FIL"
+
+    # type: types.FIL
+    #PerSector = "0.03 FIL"
+
+[Addresses]
+  # Addresses to send PreCommit messages from
+  #
+  # type: []string
+  #PreCommitControl = []
+
+  # Addresses to send Commit messages from
+  #
+  # type: []string
+  #CommitControl = []
+
+  # type: []string
+  #TerminateControl = []
+
+  # type: []string
+  #DealPublishControl = []
+
+  # DisableOwnerFallback disables usage of the owner address for messages
+  # sent automatically
+  #
+  # type: bool
+  #DisableOwnerFallback = false
+
+  # DisableWorkerFallback disables usage of the worker address for messages
+  # sent automatically, if control addresses are configured.
+  # A control address that doesn't have enough funds will still be chosen
+  # over the worker address if this flag is set.
+  #
+  # type: bool
+  #DisableWorkerFallback = false
+
+
+[DAGStore]
+  # Path to the dagstore root directory. This directory contains three
+  # subdirectories, which can be symlinked to alternative locations if
+  # need be:
+  # - ./transients: caches unsealed deals that have been fetched from the
+  # storage subsystem for serving retrievals.
+  # - ./indices: stores shard indices.
+  # - ./datastore: holds the KV store tracking the state of every shard
+  # known to the DAG store.
+  # Default value: <LOTUS_MARKETS_PATH>/dagstore (split deployment) or
+  # <LOTUS_MINER_PATH>/dagstore (monolith deployment)
+  #
+  # type: string
+  #RootDir = ""
+
+  # The maximum amount of indexing jobs that can run simultaneously.
+  # 0 means unlimited.
+  # Default value: 5.
+  #
+  # type: int
+  #MaxConcurrentIndex = 5
+
+  # The maximum amount of unsealed deals that can be fetched simultaneously
+  # from the storage subsystem. 0 means unlimited.
+  # Default value: 0 (unlimited).
+  #
+  # type: int
+  #MaxConcurrentReadyFetches = 0
+
+  # The maximum number of simultaneous inflight API calls to the storage
+  # subsystem.
+  # Default value: 100.
+  #
+  # type: int
+  #MaxConcurrencyStorageCalls = 100
+
+  # The time between calls to periodic dagstore GC, in time.Duration string
+  # representation, e.g. 1m, 5m, 1h.
+  # Default value: 1 minute.

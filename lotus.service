@@ -1,0 +1,33 @@
+[Unit]
+Description=Lotus Daemon Service
+After=network-online.target
+Requires=network-online.target
+
+[Service]
+User=filecoin
+ExecStart=/usr/local/bin/lotus daemon --import-snapshot https://fil-chain-snapshots-fallback.s3.amazonaws.com/mainnet/minimal_finality_stateroots_latest.car
+ExecStop=/usr/local/bin/lotus daemon stop && rm -rf /home/filecoin/.lotus/datastore/chain/*
+Restart=always
+RestartSec=10
+RuntimeMaxSec=604800
+
+Environment=TMPDIR=/home/filecoin/sealing
+Environment=LOTUS_PATH=/home/filecoin/.lotus
+Environment=FIL_PROOFS_PARAMETER_CACHE=/home/filecoin/lotus/node/parameter
+Environment=FIL_PROOFS_PARENT_CACHE=/home/filecoin/lotus/node/parent
+Environment=RUSTFLAGS="-C target-cpu=native -g"
+Environment=FFI_BUILD_FROM_SOURCE=1
+Environment=FFI_USE_MULTICORE_SDR=1
+Environment=GOLOG_OUTPUT=file
+Environment=GOLOG_FILE=/var/log/lotus/daemon.log
+Environment=RUST_LOG=info
+Environment=RUST_BACKTRACE=full
+StandardOutput=append:/var/log/lotus/daemon_rust.log
+
+MemoryAccounting=true
+MemoryHigh=8G
+MemoryMax=64G
+LimitNOFILE=8192:10240
+
+[Install]
+WantedBy=multi-user.target
