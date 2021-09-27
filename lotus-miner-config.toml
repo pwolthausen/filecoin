@@ -145,7 +145,7 @@ ListenAddress = "/ip4/192.168.1.3/tcp/2345/http"
   # see https://docs.filecoin.io/mine/lotus/miner-configuration/#using-filters-for-fine-grained-storage-and-retrieval-deal-acceptance for more details
   #
   # type: string
-  #Filter = ""
+  Filter = "/home/filecoin/CIDgravity-X/cidgravity_storage_connector.py --reject"
 
   # A command used for fine-grained evaluation of retrieval deals
   # see https://docs.filecoin.io/mine/lotus/miner-configuration/#using-filters-for-fine-grained-storage-and-retrieval-deal-acceptance for more details

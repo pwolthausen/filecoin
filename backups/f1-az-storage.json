@@ -1,0 +1,10 @@
+{
+    "StoragePaths": [
+        {
+            "Path": "/opt/lotus/longterm/"
+        },
+        {
+            "Path": "/opt/lotus/sealing/"
+        }
+    ]
+}
