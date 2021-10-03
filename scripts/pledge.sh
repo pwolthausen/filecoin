@@ -1,14 +1,16 @@
 #! /bin/bash
 
 i=0
-date +%H:%M
-if [ $(/usr/local/bin/lotus-miner sectors list | grep -v Proving | wc -l) -lt 7 ]
+date
+sectors=$(/usr/local/bin/lotus-miner sectors list | awk '$5 == "n/a"' | wc -l)
+if [ $sectors -lt 6 ]
 then
 	echo "needs more pledges"
-	while [ $(/usr/local/bin/lotus-miner sectors list | grep -v Proving | wc -l) -lt 7 ]
+	while [ $sectors -lt 6 ]
 	do
 		/usr/local/bin/lotus-miner sectors pledge
 		echo "pledge added"
+		((sectors++))
 		((i++))
 		if [[ "$i" == '6' ]]
 	       	then
@@ -18,3 +20,4 @@ then
 else
 	echo "no new pledges needed"
 fi
+

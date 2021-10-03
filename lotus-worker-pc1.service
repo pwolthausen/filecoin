@@ -1,6 +1,6 @@
 # /etc/systemd/system/lotus-worker-pc1.service
 [Unit]
-Description=Lotus Worker Service for PC2 phase
+Description=Lotus Worker Service for PC1 phase
 After=network.target
 
 [Service]

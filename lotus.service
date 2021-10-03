@@ -6,10 +6,10 @@ Requires=network-online.target
 [Service]
 User=filecoin
 ExecStart=/usr/local/bin/lotus daemon --import-snapshot https://fil-chain-snapshots-fallback.s3.amazonaws.com/mainnet/minimal_finality_stateroots_latest.car
-ExecStop=/usr/local/bin/lotus daemon stop && rm -rf /home/filecoin/.lotus/datastore/chain/*
+#ExecStop=/usr/local/bin/lotus daemon stop && rm -rf /home/filecoin/.lotus/datastore/chain/*
 Restart=always
 RestartSec=10
-RuntimeMaxSec=604800
+#RuntimeMaxSec=604800
 
 Environment=TMPDIR=/home/filecoin/sealing
 Environment=LOTUS_PATH=/home/filecoin/.lotus
