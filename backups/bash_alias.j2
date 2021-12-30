@@ -1,0 +1,32 @@
+####### Environment Variables #########
+export LOTUS_PATH=/opt/.lotus
+export LOTUS_MINER_PATH=/opt/.lotusminer
+export LOTUS_BACKUP_BASE_PATH={{ miner_backup_dir }}
+export FIL_PROOFS_PARAMETER_CACHE=/opt/lotus/node/parameter
+export FIL_PROOFS_PARENT_CACHE=/opt/lotus/node/parent
+export TMPDIR=/opt/lotus/sealing
+export FFI_USE_MULTICORE_SDR=1
+export RUSTFLAGS="-C target-cpu=native -g"
+export FFI_BUILD_FROM_SOURCE=1
+export NVIDIA_VISIBLE_DEVICES=[]
+
+export BELLMAN_CPU_UTILIZATION=0.875
+export BELLMAN_CUSTOM_GPU="GeForce RTX 3060 Ti:4864"
+export GOLOG_OUTPUT=file
+export GOLOG_FILE=/var/log/lotus/daemon.log
+export RUST_LOG=info
+export RUST_BACKTRACE=full
+
+###### aliases ######
+
+alias lotus-logs='tail -n 50 /var/log/lotus/daemon.log'
+alias lotus-rust='tail -n 50 /var/log/lotus/daemon_rust.log'
+alias miner-logs='tail -n 50 /var/log/lotus/miner.log'
+alias miner-rust='tail -n 50 /var/log/lotus/miner_rust.log'
+alias pc1-logs='tail -n 50 /var/log/lotus/pc1.log'
+alias pc1-rust='tail -n 50 /var/log/lotus/pc1_rust.log'
+alias pc2-logs='tail -n 50 /var/log/lotus/pc2.log'
+alias pc2-rust='tail -n 50 /var/log/lotus/pc2_rust.log'
+alias commit-logs='tail -n 50 /var/log/lotus/commit.log'
+alias commit-rust='tail -n 50 /var/log/lotus/commit_rust.log'
+alias lotus-status='GOLOG_LOG_FMT=color watch -n 30 -c "lotus-miner sectors list | tail -n 2 | cut -b 1-$COLUMNS; echo; lotus-miner sealing workers; echo; lotus-miner sealing jobs; echo; lotus-miner storage list; lotus-miner --color=1 actor control list; echo; df -h -t ext4 -t zfs; echo; lotus mpool pending --local |grep Nonce |wc -l; echo mpool local; echo; lotus-miner storage-deals list |grep 'StorageDealPublish\|StorageDealTransferring'; echo; lotus-miner storage-deals pending-publish"'

@@ -1,9 +1,15 @@
 #! /bin/bash
 
+export MINER_API_INFO={{ miner_api }}
+
 date
 date=$(date +"%d_%m_%Y")
-backup_dir=/home/filecoin/miner-backups 
+backup_dir={{ miner_backup_dir | default('/opt/miner-backups') }} 
 /usr/local/bin/lotus-miner backup $backup_dir/$date.cbor
+
+echo "Moving backup to Google Storage"
+gsutil -m cp $backup_dir/$date.cbor gs://{{ gs_bucket }}
+
 if [ $(ls $backup_dir | wc -l) -gt 6 ]
 then
     echo "Removing oldest backup $(ls $backup_dir -t | tail -1)"

@@ -1,0 +1,207 @@
+---
+- hosts: filecoin
+  become: true
+  tasks:
+  - name: Update OS
+    ansible.builtin.apt: 
+      update_cache: yes
+      upgrade: yes
+    when: ansible_facts['os_family'] == "Debian"
+
+  - name: disable server sleep setting
+    ansible.builtin.systemd:
+      masked: yes
+      name: "{{ item }}"
+    loop:
+      - sleep.target
+      - suspend.target
+      - hibernate.target
+      - hybrid-sleep.target
+
+  - name: Install Nvidia drivers
+    ansible.builtin.apt:
+      update_cache: yes
+      name: nvidia-driver-460-server
+      state: latest
+    when: ansible_facts['os_family'] == "Debian"
+  
+  - name: Harden SSH config
+
+  - name: set bash aliases
+    ansible.builtin.template:
+      src: backups/bash_alias.j2
+      dest: /root/.bash_aliases
+      mode: 644
+      owner: root
+      group: root
+
+  # - name: Create Sealing Volume
+  #   block: 
+  #   - community.general.lvg:
+  #       vg: sealing
+  #       pvs: "{{ sealing_pvs | flatten }}"
+  #       state: present
+
+  #   - community.general.lvol:
+  #       vg: sealing
+  #       lv: sealing
+  #       size: 100%FRFEE
+  #       state: present
+
+  #   - community.general.filesystem:
+  #       fstype: ext4
+  #       dev: /dev/sealing/sealing
+  #       state: present
+
+  # - name: Create Longterm Volume
+  #   block: 
+  #   - community.general.lvg:
+  #       vg: longterm
+  #       pvs: "{{ longterm_pvs | flatten }}"
+  #       state: present
+
+  #   - community.general.lvol:
+  #       vg: longterm
+  #       lv: longterm
+  #       size: 100%FRFEE
+  #       state: present
+
+  #   - community.general.filesystem:
+  #       fstype: ext4
+  #       dev: /dev/longterm/longterm
+  #       state: present
+
+  - name: Create filecoin user
+    ansible.builtin.user:
+      name: filecoin
+      group: filecoin
+      create_home: yes
+      shell: /bin/bash
+      groups: render
+
+  # - name: Add Longterm and Sealing to fstab
+  #   block:
+  #   - name: Create mount directories
+  #     ansible.builtin.file:
+  #       path: /opt/lotus/"{{ item }}"
+  #       state: directory
+  #       group: filecoin
+  #     loop:
+  #       - longterm
+  #       - sealing
+
+  #   - ansible.posix.mount:
+  #       boot: yes
+  #       path: /opt/lotus/"{{ item }}"
+  #       state: mounted
+  #       src: /dev/"{{ item }}"/"{{ item }"
+  #       fstype: ext4
+  #     loop:
+  #       - longterm
+  #       - sealing
+
+  - name: install lotus dependancies
+    ansible.builtin.apt:
+      name: 
+      - mesa-opencl-icd
+      - ocl-icd-opencl-dev
+      - gcc
+      - git
+      - bzr
+      - jq
+      - curl
+      - hwloc
+      - wget
+      - pkg-config
+      - build-essential
+      - clang
+      - libhwloc-dev
+      state: present
+    when: ansible_facts['os_family'] == "Debian"
+
+  - name: install required snaps
+    community.general.snap:
+      name: google-cloud-sdk
+      state: present
+      classic: yes
+
+  - name: update apt
+    ansible.builtin.apt:
+      update_cache: yes
+      upgrade: yes
+    when: ansible_facts['os_family'] == "Debian"
+
+  - name: Install latest Golang
+    block:
+    - name: remove old version of golang
+      ansible.builtin.apt:
+        name: golang*
+        state: absent
+        purge: yes
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Download latest golang
+      ansible.builtin.get_url: 
+        url: https://dl.google.com/go/go1.16.4.linux-amd64.tar.gz
+        dest: /tmp/golang.tar.gz
+
+    - name: Extract tarball
+      ansible.builtin.unarchive:
+        src: /tmp/golang.tar.gz
+        dest: /tmp/golang
+  
+    - name: Add go binary to bin
+      ansible.builtin.copy:
+        src:  /tmp/golang/bin/go
+        dest: /usr/bin/go
+        mode: 755
+        owner: root
+        group: root
+        remote_src: yes
+
+  - name: Install lotus
+    block:
+      - ansible.builtin.git:
+          repo: https://github.com/filecoin-project/lotus.git
+          dest: /opt/lotus/lotus
+
+      - community.general.make:
+          chdir: /opt/lotus/lotus
+          target: clean all
+        
+      - community.general.make:
+          chdir: /opt/lotus/lotus
+          target: install
+
+  - name: Create configuration directories for various lotus actors
+    ansible.builtin.file:
+      path: /opt/"{{ item }}"
+      state: directory
+      owner: filecoin
+      group: filecoin
+      mode: 775
+    loop:
+    - .lotus
+    - .lotusminer
+    - .lotusworker-pc1
+    - .lotusworker-pc2-0
+    - .lotusworker-pc2-1
+    - .lotusworker-commit-0
+    - .lotusworker-commit-1
+
+  - name: Copy lotus config files
+    ansible.builtin.template:
+      src: files/lotus-config.toml.j2
+      dest: /opt/.lotus/config.toml
+      group: filecoin
+
+  - name: Copy systemd files
+    ansible.builtin.copy:
+      src: files/lotus.service
+      dest: /etc/systemd/system/lotus.service
+
+  - name: Start lotus daemon
+    ansible.builtin.systemd:
+      state: started
+      enabled: yes
+      name: lotus.service

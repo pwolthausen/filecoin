@@ -1,0 +1,28 @@
+#! /bin/bash
+
+export MINER_API_INFO={{ miner_api }}
+
+i=0
+date
+sectors=$(/usr/local/bin/lotus-miner sectors list | awk '$5 == "n/a"' | wc -l)
+jobs=$(/usr/local/bin/lotus-miner sealing jobs | awk '$5 == "PC1"' | wc -l)
+if [ $sectors -lt 12 ]
+then
+	if [ $jobs -lt 8 ]
+	then
+		echo "needs more pledges"
+		while [ $sectors -lt 12 ]
+		do
+			/usr/local/bin/lotus-miner sectors pledge
+			echo "pledge added"
+			((sectors++))
+			((i++))
+			if [[ "$i" == '8' ]]
+				then
+				break
+			fi
+		done
+	fi
+else
+	echo "no new pledges needed"
+fi

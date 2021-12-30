@@ -1,0 +1,31 @@
+[Unit]
+Description=Lotus Disputer Service
+After=network-online.target
+Requires=network-online.target
+
+[Service]
+User=filecoin
+ExecStart=/usr/local/bin/lotus chain disputer --max-fee 1 start
+Restart=always
+RestartSec=10
+
+Environment=TMPDIR=/opt/lotus/sealing
+Environment=LOTUS_PATH=/opt/.lotus
+Environment=FIL_PROOFS_PARAMETER_CACHE=/opt/lotus/node/parameter
+Environment=FIL_PROOFS_PARENT_CACHE=/opt/lotus/node/parent
+Environment=RUSTFLAGS="-C target-cpu=native -g"
+Environment=FFI_BUILD_FROM_SOURCE=1
+Environment=FFI_USE_MULTICORE_SDR=1
+Environment=GOLOG_OUTPUT=file
+Environment=GOLOG_FILE=/var/log/lotus/disputer.log
+Environment=RUST_LOG=info
+Environment=RUST_BACKTRACE=full
+StandardOutput=append:/var/log/lotus/disputer_rust.log
+
+MemoryAccounting=true
+MemoryHigh=8G
+MemoryMax=64G
+LimitNOFILE=8192:10240
+
+[Install]
+WantedBy=multi-user.target

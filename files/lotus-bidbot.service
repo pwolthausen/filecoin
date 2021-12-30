@@ -1,0 +1,24 @@
+[Unit]
+Description=Lotus Disputer Service
+After=network-online.target
+Requires=network-online.target
+
+[Service]
+User=filecoin
+ExecStart=/home/filecoin/go/bin/bidbot daemon --deal-start-window 1 --wallet-addr-sig {{ signature }} --lotus-miner-api-maddr /ip4/{{ ansible_default_ipv4 }}/tcp/2345/http --lotus-miner-api-token {{ miner_token}} --cid-gravity-key {{ CIDgravity_token }} --boost-download --sealing-sectors-limit 6 --storage-provider-id {{ miner_id }}
+Restart=always
+RestartSec=10
+
+Environment=GOLOG_OUTPUT=file
+Environment=GOLOG_FILE=/var/log/lotus/bidbot.log
+Environment=RUST_LOG=info
+Environment=RUST_BACKTRACE=full
+StandardOutput=append:/var/log/lotus/bidbot_rust.log
+
+MemoryAccounting=true
+MemoryHigh=8G
+MemoryMax=64G
+LimitNOFILE=8192:10240
+
+[Install]
+WantedBy=multi-user.target

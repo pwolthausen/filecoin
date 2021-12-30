@@ -1,21 +1,21 @@
 # /etc/systemd/system/lotus-worker-pc1.service
 [Unit]
-Description=Lotus Worker Service for PC2 phase
+Description=Lotus Worker Service for PC1 phase
 After=network.target
 
 [Service]
 User=filecoin
-ExecStart=/usr/local/bin/lotus-worker run --no-local-storage --parallel-fetch-limit 10 --listen "0.0.0.0:5678" --precommit1=false --commit=false
+ExecStart=/usr/local/bin/lotus-worker run --no-local-storage --parallel-fetch-limit 10 --listen "0.0.0.0:3457" --precommit2=false --commit=false --addpiece=false
 Restart=always
 RestartSec=10
 LimitNOFILE=1048576:1048576
+MemoryHigh=1T
 
 # Required Paths 
-# Most paths below relies on /lotus path, but you can use any path, though I generally recommend using my package structure
-Environment=LOTUS_WORKER_PATH=/home/filecoin/.lotusworkerpc2
-Environment=LOTUS_PATH=/home/filecoin/.lotus
-Environment=FIL_PROOFS_PARAMETER_CACHE=/home/filecoin/lotus/node/parameter
-Environment=FIL_PROOFS_PARENT_CACHE=/home/filecoin/lotus/node/parent
+Environment=LOTUS_WORKER_PATH=/opt/.lotusworker-pc1
+Environment=LOTUS_PATH=/opt/.lotus
+Environment=FIL_PROOFS_PARAMETER_CACHE=/opt/lotus/node/parameter
+Environment=FIL_PROOFS_PARENT_CACHE=/opt/lotus/node/parent
 
 # PC1 related env vars
 # Fill here vars like SDR related that suits your hardware
@@ -24,24 +24,22 @@ Environment=FIL_PROOFS_MAXIMIZE_CACHING=1
 Environment=RUSTFLAGS='-C target-cpu=native -g'
 Environment=FFI_BUILD_FROM_SOURCE=1
 Environment=FFI_USE_MULTICORE_SDR=1
-Environment=BELLMAN_CPU_UTILIZATION=0.5
 Environment=FIL_PROOFS_MAXIMIZE_CACHING=1
 Environment=FIL_PROOFS_USE_GPU_COLUMN_BUILDER=1
 Environment=FIL_PROOFS_USE_GPU_TREE_BUILDER=1
 Environment=FIL_PROOFS_USE_MULTICORE_SDR=1
 Environment=TMPDIR=/opt/lotus/sealing
-Environment=NVIDIA_VISIBLE_DEVICES=[0,1]
 
 # Logging
 Environment=GOLOG_OUTPUT=file
-Environment=GOLOG_FILE=/var/log/lotus/pc2.log
+Environment=GOLOG_FILE=/var/log/lotus/pc1.log
 #Environment=GOLOG_LOG_FMT=json # Uncomment this in case you want machine readable logs in JSON
 Environment=RUST_LOG=info
 Environment=RUST_BACKTRACE=full
-StandardOutput=append:/var/log/lotus/pc2_rust.log
+StandardOutput=append:/var/log/lotus/pc1_rust.log
 
 # Access to Miner/Daemon
-Environment=FULLNODE_API_INFO=<api token + endpoint>
+Environment=MARKETS_API_INFO=<api token + endpoint>
 Environment=MINER_API_INFO=<api token + endpoint>
 
 [Install]

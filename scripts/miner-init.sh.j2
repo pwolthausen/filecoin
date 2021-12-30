@@ -1,0 +1,20 @@
+#! /bin/bash
+
+/usr/local/bin/lotus wallet new bls
+/usr/local/bin/lotus wallet new bls
+/usr/local/bin/lotus wallet new bls
+
+ITER=0
+for x in $(/usr/local/bin/lotus wallet list | awk 'NR>1 { print $1}'); 
+do 
+    export wallet$ITER="$x";
+    ITER=$(expr $ITER + 1) 
+done
+
+/usr/local/bin/lotus-miner fetch-params 64GiB
+/usr/local/bin/lotus-miner init --owner=$wallet0 --worker=$wallet1 --no-local-storage --sector-size 64GiB
+/usr/local/bin/lotus-miner actor control set --really-do-it $wallet2
+/usr/local/bin/lotus-miner storage attach --init --seal /opt/lotus/sealing
+/usr/local/bin/lotus-miner storage attach --init --store /opt/lotus/longterm
+/usr/local/bin/lotus-miner actor set-addrs /ip4/$master_static_ip/tcp/24001
+/usr/local/bin/lotus-miner storage-deals set-ask --price 0 --verified-price 0 --min-piece-size 256 --max-piece-size 64GiB

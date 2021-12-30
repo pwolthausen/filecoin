@@ -1,0 +1,4 @@
+55 23 * * * /opt/lotusscripts/miner-backup.sh >> /var/log/minerbackups.log 2>&1
+*/30 * * * * /opt/lotusscripts/pledge.sh >> /var/log/pledge.log 2>&1
+0 0 * * * /opt/lotusscripts/chain-prune.sh >> /var/log/lotus/daemon.log 2>&1
+* 20 * * * /usr/bin/truncate -s 2G /var/log/lotus/*

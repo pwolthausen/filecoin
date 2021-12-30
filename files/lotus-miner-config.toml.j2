@@ -1,6 +1,6 @@
 [API]
-ListenAddress = "/ip4/0.0.0.0/tcp/4567/http"
-  RemoteListenAddress = "0.0.0.0:4567"
+ListenAddress = "/ip4/{{ ansible_default_ipv4 }}/tcp/2345/http"
+  RemoteListenAddress = "{{ ansible_default_ipv4 }}:2345"
   Timeout = "30s"
 [Backup]
   # Note that in case of metadata corruption it might be much harder to recover
@@ -15,14 +15,14 @@ ListenAddress = "/ip4/0.0.0.0/tcp/4567/http"
   # Format: multiaddress; see https://multiformats.io/multiaddr/
   #
   # type: []string
-  ListenAddresses = ["/ip4/0.0.0.0/tcp/15018", "/ip6/::/tcp/0"]
+  ListenAddresses = ["/ip4/0.0.0.0/tcp/24001", "/ip6/::/tcp/0"]
 
   # Addresses to explicitally announce to other peers. If not specified,
   # all interface addresses are announced
   # Format: multiaddress
   #
   # type: []string
-  AnnounceAddresses = ["/ip4/72.212.184.126/tcp/15018"]
+  AnnounceAddresses = ["/ip4/{{ master_static_ip }}/tcp/24001"]
 
   # Addresses to not announce
   # Format: multiaddress
@@ -52,13 +52,13 @@ ListenAddress = "/ip4/0.0.0.0/tcp/4567/http"
 
 [Subsystems]
   # type: bool
-  #EnableMining = true
+  EnableMining = true
 
   # type: bool
-  #EnableSealing = true
+  EnableSealing = false
 
   # type: bool
-  #EnableSectorStorage = true
+  #EnableSectorStorage = false
 
   # type: bool
   #EnableMarkets = true
@@ -111,7 +111,7 @@ ListenAddress = "/ip4/0.0.0.0/tcp/4567/http"
   # before being assigned to a sector
   #
   # type: Duration
-  #ExpectedSealDuration = "24h0m0s"
+  ExpectedSealDuration = "15h0m0s"
 
   # Maximum amount of time proposed deal StartEpoch can be in future
   #
@@ -145,7 +145,7 @@ ListenAddress = "/ip4/0.0.0.0/tcp/4567/http"
   # see https://docs.filecoin.io/mine/lotus/miner-configuration/#using-filters-for-fine-grained-storage-and-retrieval-deal-acceptance for more details
   #
   # type: string
-  #Filter = ""
+  Filter = "/home/filecoin/CIDgravity-X/cidgravity_storage_connector.py --reject"
 
   # A command used for fine-grained evaluation of retrieval deals
   # see https://docs.filecoin.io/mine/lotus/miner-configuration/#using-filters-for-fine-grained-storage-and-retrieval-deal-acceptance for more details
@@ -171,17 +171,17 @@ ListenAddress = "/ip4/0.0.0.0/tcp/4567/http"
   # 0 = no limit
   #
   # type: uint64
-  MaxWaitDealsSectors = 2
+  MaxWaitDealsSectors = 25
 
   # Upper bound on how many sectors can be sealing at the same time when creating new CC sectors (0 = unlimited)
   #
   #type: uint64
-  MaxSealingSectors = 0
+  MaxSealingSectors = 15
 
   # Upper bound on how many sectors can be sealing at the same time when creating new sectors with deals (0 = unlimited)
   #
    #type: uint64
-  MaxSealingSectorsForDeals = 0
+  MaxSealingSectorsForDeals = 25
 
   # CommittedCapacitySectorLifetime is the duration a Committed Capacity (CC) sector will
   # live before it must be extended or converted into sector containing deals before it is
@@ -194,7 +194,7 @@ ListenAddress = "/ip4/0.0.0.0/tcp/4567/http"
   # Sectors which are fully filled will start sealing immediately
   #
    #type: Duration
-  WaitDealsDelay = "1h0m0s"
+  WaitDealsDelay = "2h0m0s"
 
   # Whether to keep unsealed copies of deal data regardless of whether the client requested that. This lets the miner
   # avoid the relatively high cost of unsealing the data later, at the cost of more storage space
@@ -286,7 +286,7 @@ ListenAddress = "/ip4/0.0.0.0/tcp/4567/http"
 
   AllowAddPiece = false
 
-  AllowPreCommit1 = true
+  AllowPreCommit1 = false
 
   AllowPreCommit2 = false
 

@@ -1,0 +1,84 @@
+---
+- hosts: workers
+  become: true
+  tasks:
+  - name: Copy systemd files
+    ansible.builtin.template:
+      src: files/lotus-"{{ item }}".service.j2
+      dest: /etc/systemd/system/lotus-"{{ item }}".service
+    loop:
+    - worker-pc1
+    - worker-pc2-0
+    - worker-pc2-1
+    - worker-commit-0
+    - worker-commit-1
+
+  - name: Set Storage paths for workers
+    ansible.builtin.copy:
+      src:  files/storage/json
+      dest: /opt/.lotus"{{ item }}""/storage.json
+      mode: 644
+      owner: filecoin
+      group: filecoin
+    loop:
+    - worker-pc1
+    - worker-pc2-0
+    - worker-pc2-1
+    - worker-commit-0
+    - worker-commit-1
+
+  - name: Start lotus workers
+    ansible.builtin.systemd:
+      state: started
+      enabled: yes
+      name: lotus-"{{ item }}".service
+    loop:
+    - worker-pc1
+    - worker-pc2-0
+    - worker-pc2-1
+    - worker-commit-0
+    - worker-commit-1
+
+  - name: Copy over scripts for automation
+    block:
+    - ansible.builtin.file:
+        path: "{{ miner_backup_dir | default('/opt/miner-backups') }}"
+        group: filecoin
+        state: directory
+
+    - ansible.builtin.file:
+        path: /opt/lotusscripts
+        group: filecoin
+        state: directory
+
+    - ansible.builtin.template:
+        src: scripts/"{{ item }}".sh.j2
+        dest: /opt/lotusscripts/"{{ item }}".sh
+        group: filecoin
+        mode: 755
+      loop:
+      - miner-backup
+      - chain-prune
+      - pledge
+
+    - ansible.builtin.cron:
+        name: "Lotus miner daily backup"
+        job: "/opt/lotusscripts/miner-backup.sh >> /var/log/minerbackups.log 2>&1"
+        minute: "55"
+        hour: "23"
+
+    - ansible.builtin.cron:
+        name: "Lotus miner auto-pledge"
+        job: "/opt/lotusscripts/pledge.sh >> /var/log/pledge.log 2>&1"
+        minute: "*/30"
+
+    - ansible.builtin.cron:
+        name: "Lotus chain prune and update"
+        job: "/opt/lotusscripts/chain-prune.sh >> /var/log/lotus/daemon.log 2>&1"
+        minute: "0"
+        hour: "0"
+
+    - ansible.builtin.cron:
+        name: "Ensure Lotus logs don't fill up disk"
+        job: "/usr/bin/truncate -s 2G /var/log/lotus/*"
+        hour: "20"

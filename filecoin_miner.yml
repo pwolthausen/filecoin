@@ -1,0 +1,36 @@
+---
+
+#### Next Steps ####
+# lotus wallet new bls (x3)
+# 
+# As Filecoin user, initialise miner:
+## lotus-miner fetch-params 64GiB
+## lotus-miner init --owner={{ first wallet }} --worker={{ second wallet }} --no-local-storage --sector-size 64GiB
+## lotus-miner actor control set --really-do-it {{ third wallet }}
+## lotus-miner storage attach --init --seal /opt/lotus/sealing
+## lotus-miner storage attach --init --store /opt/lotus/longterm
+## lotus-miner actor set-addrs /ip4/{{ master_static_ip }}/tcp/24001
+## lotus-miner storage-deals set-ask --price 0 --verified-price 0 --min-piece-size 256 --max-piece-size 64GiB
+## Install and start CIDGravity connector
+
+
+- hosts: filecoin
+  become: true
+  tasks:
+  - name: Copy lotus-miner config files
+    ansible.builtin.template:
+      src: files/lotus-miner-config.toml.j2
+      dest: /opt/.lotusminer/config.toml
+      group: filecoin
+
+  - name: Copy systemd files
+    ansible.builtin.template:
+      src: files/lotus-miner.service.j2
+      dest: /etc/systemd/system/lotus-miner.service
+
+  - name: Start lotus miner
+    ansible.builtin.systemd:
+      state: started
+      enabled: yes
+      name: lotus-miner.service
+

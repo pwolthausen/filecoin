@@ -6,15 +6,14 @@ Requires=network-online.target
 [Service]
 User=filecoin
 ExecStart=/usr/local/bin/lotus daemon --import-snapshot https://fil-chain-snapshots-fallback.s3.amazonaws.com/mainnet/minimal_finality_stateroots_latest.car
-#ExecStop=/usr/local/bin/lotus daemon stop && rm -rf /home/filecoin/.lotus/datastore/chain/*
 Restart=always
 RestartSec=10
 #RuntimeMaxSec=604800
 
-Environment=TMPDIR=/home/filecoin/sealing
-Environment=LOTUS_PATH=/home/filecoin/.lotus
-Environment=FIL_PROOFS_PARAMETER_CACHE=/home/filecoin/lotus/node/parameter
-Environment=FIL_PROOFS_PARENT_CACHE=/home/filecoin/lotus/node/parent
+Environment=TMPDIR=/opt/lotus/sealing
+Environment=LOTUS_PATH=/opt/.lotus
+Environment=FIL_PROOFS_PARAMETER_CACHE=/opt/lotus/node/parameter
+Environment=FIL_PROOFS_PARENT_CACHE=/opt/lotus/node/parent
 Environment=RUSTFLAGS="-C target-cpu=native -g"
 Environment=FFI_BUILD_FROM_SOURCE=1
 Environment=FFI_USE_MULTICORE_SDR=1
