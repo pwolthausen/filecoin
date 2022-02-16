@@ -18,12 +18,11 @@ Environment=LOTUS_MINER_PATH=/opt/.lotusminer
 Environment=LOTUS_BACKUP_BASE_PATH=/opt/miner-backups
 Environment=FIL_PROOFS_PARAMETER_CACHE=/opt/lotus/node/parameter
 Environment=FIL_PROOFS_PARENT_CACHE=/opt/lotus/node/parent
-Environment=TMPDIR=/opt/lotus/sealing
+Environment=TMPDIR=/opt/lotus/tmpdir/miner
 Environment=FFI_USE_MULTICORE_SDR=1
 Environment=FFI_USE_GPU2=1
 Environment=RUSTFLAGS="-C target-cpu=native -g"
 Environment=FFI_BUILD_FROM_SOURCE=1
-Environment=NVIDIA_VISIBLE_DEVICES=[]
 
 Environment=BELLMAN_CPU_UTILIZATION=0.5
 Environment=BELLMAN_CUSTOM_GPU="GeForce RTX 3060 Ti:4864"

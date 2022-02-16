@@ -5,7 +5,7 @@ Requires=network-online.target
 
 [Service]
 User=filecoin
-ExecStart=/home/filecoin/go/bin/bidbot daemon --deal-start-window 1 --wallet-addr-sig {{ signature }} --lotus-miner-api-maddr /ip4/{{ ansible_default_ipv4 }}/tcp/2345/http --lotus-miner-api-token {{ miner_token}} --cid-gravity-key {{ CIDgravity_token }} --boost-download --sealing-sectors-limit 6 --storage-provider-id {{ miner_id }}
+ExecStart=/home/filecoin/go/bin/bidbot daemon --deal-start-window 1 --wallet-addr-sig {{ signature }} --lotus-miner-api-maddr /ip4/{{ ansible_default_ipv4 }}/tcp/2345/http --lotus-miner-api-token {{ miner_token}} --cid-gravity-key {{ CIDgravity_token }} --boost-download --sealing-sectors-limit 15 --storage-provider-id {{ miner_id }}
 Restart=always
 RestartSec=10
 

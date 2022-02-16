@@ -5,24 +5,30 @@ export MINER_API_INFO={{ miner_api }}
 i=0
 date
 sectors=$(/usr/local/bin/lotus-miner sectors list | awk '$5 == "n/a"' | wc -l)
-jobs=$(/usr/local/bin/lotus-miner sealing jobs | awk '$5 == "PC1"' | wc -l)
+pc1s=$(/usr/local/bin/lotus-miner sealing jobs | awk '$5 == "PC1"' | wc -l)
+deals=$(/usr/local/bin/lotus-miner sectors list | awk '$2 == "WaitDeals"' | wc -l)
+packing=$(/usr/local/bin/lotus-miner sectors list | awk '$2 == "Packing"' | wc -l)
+pledges=$(($pc1s + $deals + $packing))
+
 if [ $sectors -lt 12 ]
 then
-	if [ $jobs -lt 8 ]
+	if [ $pledges -lt 6 ]
 	then
-		echo "needs more pledges"
-		while [ $sectors -lt 12 ]
+		echo "More pledges required"
+		while [ $pledges -lt 6 ]
 		do
 			/usr/local/bin/lotus-miner sectors pledge
 			echo "pledge added"
-			((sectors++))
+			((pledges++))
 			((i++))
-			if [[ "$i" == '8' ]]
+			if [ $i -ge 6 ]
 				then
 				break
 			fi
 		done
+	else
+		echo "No new pledges needed: PC1 limit reached"
 	fi
 else
-	echo "no new pledges needed"
+	echo "No new pledges needed: sealing limit reached"
 fi

@@ -1,18 +1,18 @@
-# /etc/systemd/system/lotus-worker-pc1.service
+# /etc/systemd/system/lotus-pc2-1.service
 [Unit]
 Description=Lotus Worker Service for PC2 phase
 After=network.target
 
 [Service]
 User=filecoin
-ExecStart=/usr/local/bin/lotus-worker run --no-local-storage --parallel-fetch-limit 10 --listen "0.0.0.0:3458" --precommit1=false --commit=false --addpiece=false
+ExecStart=/usr/local/bin/lotus-worker run --no-local-storage --parallel-fetch-limit 10 --listen "0.0.0.0:3459" --precommit1=false --commit=false --addpiece=false
 Restart=always
 RestartSec=10
 LimitNOFILE=1048576:1048576
 
 # Required Paths 
 # Most paths below relies on /lotus path, but you can use any path, though I generally recommend using my package structure
-Environment=LOTUS_WORKER_PATH=/opt/.lotusworker-pc2-0
+Environment=LOTUS_WORKER_PATH=/opt/.lotusworker-pc2-1
 Environment=LOTUS_PATH=/opt/.lotus
 Environment=FIL_PROOFS_PARAMETER_CACHE=/opt/lotus/node/parameter
 Environment=FIL_PROOFS_PARENT_CACHE=/opt/lotus/node/parent
@@ -31,16 +31,16 @@ Environment=FIL_PROOFS_MAXIMIZE_CACHING=1
 Environment=FIL_PROOFS_USE_GPU_COLUMN_BUILDER=1
 Environment=FIL_PROOFS_USE_GPU_TREE_BUILDER=1
 Environment=FIL_PROOFS_USE_MULTICORE_SDR=1
-Environment=TMPDIR=/opt/lotus/sealing
-Environment=NVIDIA_VISIBLE_DEVICES=[0]
+Environment=TMPDIR=/opt/lotus/tmpdir/pc2-1
+Environment=CUDA_VISIBLE_DEVICES=1
 
 # Logging
 Environment=GOLOG_OUTPUT=file
-Environment=GOLOG_FILE=/var/log/lotus/pc2-0.log
+Environment=GOLOG_FILE=/var/log/lotus/pc2-1.log
 #Environment=GOLOG_LOG_FMT=json # Uncomment this in case you want machine readable logs in JSON
 Environment=RUST_LOG=info
 Environment=RUST_BACKTRACE=full
-StandardOutput=append:/var/log/lotus/pc2-0_rust.log
+StandardOutput=append:/var/log/lotus/pc2-1_rust.log
 
 # Access to Miner/Daemon
 Environment=MARKETS_API_INFO=<api token + endpoint>
