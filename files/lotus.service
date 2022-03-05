@@ -24,8 +24,8 @@ Environment=RUST_BACKTRACE=full
 StandardOutput=append:/var/log/lotus/daemon_rust.log
 
 MemoryAccounting=true
-MemoryHigh=8G
-MemoryMax=64G
+MemoryHigh=16G
+MemoryMax=32G
 LimitNOFILE=8192:10240
 
 [Install]

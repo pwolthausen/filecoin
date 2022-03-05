@@ -9,6 +9,9 @@ ExecStart=/usr/local/bin/lotus-worker run --no-local-storage --parallel-fetch-li
 Restart=always
 RestartSec=10
 LimitNOFILE=1048576:1048576
+MemoryAccounting=true
+MemoryHigh=128G
+MemoryMax=160G
 
 # Required Paths 
 # Most paths below relies on /lotus path, but you can use any path, though I generally recommend using my package structure

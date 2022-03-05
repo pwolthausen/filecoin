@@ -9,7 +9,9 @@ ExecStart=/usr/local/bin/lotus-worker run --no-local-storage --parallel-fetch-li
 Restart=always
 RestartSec=10
 LimitNOFILE=1048576:1048576
-MemoryHigh=1T
+MemoryAccounting=true
+MemoryHigh=56G
+MemoryMax=G
 
 # Required Paths 
 Environment=LOTUS_WORKER_PATH=/opt/.lotusworker-pc1
