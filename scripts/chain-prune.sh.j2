@@ -15,8 +15,17 @@ then
     systemctl stop lotus.service
     sleep 60
 
+    /usr/local/bin/lotus --version
+    echo "updating lotus binaries"
+    
+    cd /root/lotus && git pull
+    cd /root/lotus && make clean all
+    cd /root/lotus && make install
+
     rm -rf /opt/.lotus/datastore/chain/*
     
+    /usr/local/bin/lotus --version
+
     systemctl start lotus.service
     systemctl start lotus-miner
     systemctl start lotus-worker-pc1
