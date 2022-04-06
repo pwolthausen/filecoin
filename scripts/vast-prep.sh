@@ -1,6 +1,7 @@
 #! /bin/bash
 
 PUBLIC_KEY="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDXGmP6L/zc9HsEKymjhSQS7mWjagPk7QVz25dcTNVOuAlMXewWyC7HpYmH+1Q9JvJcXwK3xpQYqzwBSNAUrQYHsRYl9K20b0vbmnZZWNsaVQNy+p5rcVhYCzqJZf0bXk95T6SR/51WAS8vJSYeJtbCYRTt5ar25y5KQ+O2PiBGC+77XJ+nbFaXJvSVjnR2RPzH1XhnOkZyWlcYVeLBk78kpwqkq5fX175pnvCYnXyCAhRL1Cn09a9OPQSCxpaxcgDdTsfZx45l9tOeN+5Zl8WYKmPZ1gC47KLTXN5T7W0LR6rOZlY4xOjQ+jiM/0cNeiTFkeS2G8+0nqK7aat8SXovM25FJPQNKj59ZAI++MguBsLn+4mreoEp8sA8GqwMbunFFtTPGSkBb16wj+GrOcJ8noPkEH96yB73FUrCxHNHC9/AToj9mutqqIiwc/8eBzlkyGUSKYs+j5JpPvpkAj6UCNclwbD6jkFGNKEqvbjCYlFMPtIVTwsml5GcICFMgg8= pwolthausen@duncan"
+NVIDIA_DEVICE=$(lspci | awk '$2 == "VGA" {print $8}')
 
 apt update -y && apt upgrade -y
 apt install -y python2 openssh-server vim
@@ -13,6 +14,14 @@ apt autoremove -y
 add-apt-repository ppa:graphics-drivers/ppa --yes
 apt update
 apt install -y nvidia-driver-510
+if [[ $NVIDIA_DEVICE == *"2204"* ]]; then 
+  echo "Setting env var for 3090"
+  echo 'DISPLAY=:0 XAUTHORITY=/var/run/lightdm/root/:0 /usr/bin/nvidia-settings --assign "[gpu:0]/GPUGraphicsClockOffset[3]=-200" --assign "[gpu:0]/GPUMemoryTransferRateOffset[3]=2400" --assign "[gpu:1]/GPUGraphicsClockOffset[3]=-200" --assign "[gpu:1]/GPUMemoryTransferRateOffset[3]=2400"' >> /etc/environment
+fi
+if [[ $NVIDIA_DEVICE == *"2484"* ]]; then
+  echo "Setting env var for 3070"
+  echo 'DISPLAY=:0 XAUTHORITY=/var/run/lightdm/root/:0 /usr/bin/nvidia-settings --assign "[gpu:0]/GPUGraphicsClockOffset[3]=-100" --assign "[gpu:0]/GPUMemoryTransferRateOffset[3]=2800" --assign "[gpu:1]/GPUGraphicsClockOffset[3]=-100" --assign "[gpu:1]/GPUMemoryTransferRateOffset[3]=2800"' >> /etc/environment
+fi
 
 ## Configure Open SSH
 echo "Install and configure open SSH"
