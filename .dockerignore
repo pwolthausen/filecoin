@@ -1,0 +1,7 @@
+*.yml
+*.md
+.git
+scirpts/
+files/
+backups/
+archived/
