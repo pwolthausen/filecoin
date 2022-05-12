@@ -6,7 +6,7 @@ After=lotus.service
 Wants=lotus.service
 
 [Service]
-User=filecoin 
+User=filecoin
 ExecStart=/usr/local/bin/lotus-miner run
 ExecStop=/usr/local/bin/lotus-miner stop
 Restart=always

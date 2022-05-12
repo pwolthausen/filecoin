@@ -3,7 +3,7 @@
   become: true
   tasks:
   - name: Update OS
-    ansible.builtin.apt: 
+    ansible.builtin.apt:
       update_cache: yes
       upgrade: yes
     when: ansible_facts['os_family'] == "Debian"
@@ -24,7 +24,7 @@
       name: nvidia-driver-460-server
       state: latest
     when: ansible_facts['os_family'] == "Debian"
-  
+
   - name: Harden SSH config
 
   - name: set bash aliases
@@ -36,7 +36,7 @@
       group: root
 
   # - name: Create Sealing Volume
-  #   block: 
+  #   block:
   #   - community.general.lvg:
   #       vg: sealing
   #       pvs: "{{ sealing_pvs | flatten }}"
@@ -54,7 +54,7 @@
   #       state: present
 
   # - name: Create Longterm Volume
-  #   block: 
+  #   block:
   #   - community.general.lvg:
   #       vg: longterm
   #       pvs: "{{ longterm_pvs | flatten }}"
@@ -102,7 +102,7 @@
 
   - name: install lotus dependancies
     ansible.builtin.apt:
-      name: 
+      name:
       - mesa-opencl-icd
       - ocl-icd-opencl-dev
       - gcc
@@ -116,14 +116,9 @@
       - build-essential
       - clang
       - libhwloc-dev
+      - google-cloud-sdk
       state: present
     when: ansible_facts['os_family'] == "Debian"
-
-  - name: install required snaps
-    community.general.snap:
-      name: google-cloud-sdk
-      state: present
-      classic: yes
 
   - name: update apt
     ansible.builtin.apt:
@@ -141,7 +136,7 @@
       when: ansible_facts['os_family'] == "Debian"
 
     - name: Download latest golang
-      ansible.builtin.get_url: 
+      ansible.builtin.get_url:
         url: https://dl.google.com/go/go1.16.4.linux-amd64.tar.gz
         dest: /tmp/golang.tar.gz
 
@@ -149,7 +144,7 @@
       ansible.builtin.unarchive:
         src: /tmp/golang.tar.gz
         dest: /tmp/golang
-  
+
     - name: Add go binary to bin
       ansible.builtin.copy:
         src:  /tmp/golang/bin/go
@@ -168,7 +163,7 @@
       - community.general.make:
           chdir: /opt/lotus/lotus
           target: clean all
-        
+
       - community.general.make:
           chdir: /opt/lotus/lotus
           target: install
