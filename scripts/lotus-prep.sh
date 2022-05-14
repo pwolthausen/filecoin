@@ -3,6 +3,7 @@
 PUBLIC_KEY="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDXGmP6L/zc9HsEKymjhSQS7mWjagPk7QVz25dcTNVOuAlMXewWyC7HpYmH+1Q9JvJcXwK3xpQYqzwBSNAUrQYHsRYl9K20b0vbmnZZWNsaVQNy+p5rcVhYCzqJZf0bXk95T6SR/51WAS8vJSYeJtbCYRTt5ar25y5KQ+O2PiBGC+77XJ+nbFaXJvSVjnR2RPzH1XhnOkZyWlcYVeLBk78kpwqkq5fX175pnvCYnXyCAhRL1Cn09a9OPQSCxpaxcgDdTsfZx45l9tOeN+5Zl8WYKmPZ1gC47KLTXN5T7W0LR6rOZlY4xOjQ+jiM/0cNeiTFkeS2G8+0nqK7aat8SXovM25FJPQNKj59ZAI++MguBsLn+4mreoEp8sA8GqwMbunFFtTPGSkBb16wj+GrOcJ8noPkEH96yB73FUrCxHNHC9/AToj9mutqqIiwc/8eBzlkyGUSKYs+j5JpPvpkAj6UCNclwbD6jkFGNKEqvbjCYlFMPtIVTwsml5GcICFMgg8= pwolthausen@duncan"
 
 apt update -y && apt upgrade -y
+apt install multipath-tools multipath-tools-boot zfsutils-linux -y
 systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
 
 ## Install Nvidia drivers
@@ -39,7 +40,7 @@ for dir in $LOTUSDIR
     chown filecoin:filecoin /opt/$dir
   done
 
-for dir in "node" "sealing0" "sealing1"
+for dir in "node" "sealing0" "sealing1" "longterm0" "longterm1" "longterm2" "longterm3"
   do
     mkdir -p /opt/lotus/$dir
     chown filecoin:filecoin /opt/lotus/$dir
@@ -52,7 +53,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 apt purge golang*
 wget -c https://golang.org/dl/go1.16.4.linux-amd64.tar.gz -O - | sudo tar -xz -C /usr/local
-echo 'PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/go/bin"'
+echo 'PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/go/bin"' > /etc/environment
 
 git clone https://github.com/filecoin-project/lotus.git /opt/lotus/lotus
 make -C /opt/lotus/lotus clean all
