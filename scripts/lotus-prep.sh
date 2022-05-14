@@ -33,8 +33,7 @@ groupadd render
 useradd -m -s /bin/bash -G render filecoin
 
 ## Create lotus directories
-LOTUSDIR=("lotus" ".lotus" ".lotusminer" ".lotusworker-pc1" "lotusworker-pc2" "lotusworker-commit" "lotusworker-ap")
-for dir in $LOTUSDIR
+for dir in "lotus" ".lotus" ".lotusminer" ".lotusworker-pc1" "lotusworker-pc2" "lotusworker-commit" "lotusworker-ap"
   do
     mkdir -p /opt/$dir
     chown filecoin:filecoin /opt/$dir
